@@ -53,7 +53,41 @@ def all_users():
 
     users = crud.get_users()
 
-    return render_template('all_users.html', users=users)    
+    return render_template('all_users.html', users=users)  
+
+@app.route('/users', methods=['POST'])
+def register_user():
+    """Create User"""
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    user = crud.get_user_by_email(email)
+    if user:
+        flash('Cannot create an account with that email. Try again')
+    else:
+        crud.create_user(email,password)
+        flash('Account created! Please log in.')
+
+    return redirect('/')
+
+@app.route('/login', methods=['POST'])
+def login_user():
+    """Login User"""
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    user = crud.get_user_by_email(email)
+    if user:
+        if password == user.password:
+            flash('Logged in!')
+        
+    else:
+        flash('This email is not recognized in our system')
+        # crud.create_user(email,password)
+        # flash('Account created! Please log in.')
+
+    return redirect('/')
+  
 
 if __name__ == '__main__':
     connect_to_db(app)
